@@ -1,0 +1,6 @@
+[submodule "reliable.io"]
+	path = reliable.io
+	url = https://github.com/elzeu/reliable.io.git
+[submodule "godot-cpp"]
+	path = godot-cpp
+	url = https://github.com/elzeu/godot-cpp.git

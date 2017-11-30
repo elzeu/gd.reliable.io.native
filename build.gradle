@@ -1,0 +1,74 @@
+
+apply plugin: "c"
+apply plugin: "cpp"
+
+apply plugin: 'assembler'
+
+model {
+
+	components {
+		reliableio(NativeLibrarySpec) {
+			
+			sources {
+				c {
+					source {
+						lib library: 'reliableio', linkage: 'static'
+						srcDir "reliable.io/"
+						include "reliable.c"
+						//include "*.h"
+					}
+					exportedHeaders {
+						srcDir "reliable.io/"
+						include "reliable.h"
+					}
+				}
+			}
+
+			binaries.all {
+				cppCompiler.args '-fPIC', '-c', '-g', '-O3', '-std=c++14', '-arch', 'x86_64'
+				linker.args '-arch', 'x86_64', '-framework', 'Cocoa', '-Wl,-undefined,dynamic_lookup'
+			}
+		}
+
+		gdreliableio(NativeLibrarySpec) {
+			
+			sources {
+				cpp {
+					source {
+						lib library: 'gdreliableio', linkage: 'static'
+						srcDir "src"
+						include "*.cpp"
+						//include "*.h"
+					}
+					exportedHeaders {
+						// godot-cpp
+						srcDirs "$projectDir/godot-cpp/include/"
+						srcDirs "/Users/elizeu/Data/Repos/github/godot/modules/gdnative/include/"
+						srcDirs "$projectDir/godot-cpp/include/core/"
+
+						// reliable.io
+						srcDir "$projectDir/reliable.io/" 
+
+						srcDirs "$projectDir/src/"
+					}
+				}
+			}
+
+			binaries.all {
+				//cppCompiler.define "DLL_EXPORT" 
+				cppCompiler.args '-fPIC', '-c', '-g', '-O3', '-std=c++14', '-arch', 'x86_64'
+				linker.args '-arch', 'x86_64', '-framework', 'Cocoa', '-Wl,-undefined,dynamic_lookup'
+				linker.args '-L', "$projectDir/godot-cpp/bin/"
+				linker.args '-l', 'godot_cpp_bindings'
+				linker.args '-L', "$projectDir/build/libs/reliableio/static/"
+				linker.args '-l', 'reliableio'
+			}
+		}
+		
+	}
+}
+
+task updateProjLib(type: Copy) {
+    from 'build/libs/pw/shared/'
+    into '../game/client/lib/osx/'
+}
